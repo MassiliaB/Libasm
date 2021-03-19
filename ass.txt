@@ -1,0 +1,125 @@
+ASSEMBLEUR
+
+Faire la diff entre l’assembleur,  l’outil qui va faire la traduction en langage machine écrit en langage assembleur, il permet d’assembler notre code : NASM.
+Et le langage assembleur. Langage le plus proche de la machine, dialogue directement avec le processeur. Chaque architecture possède des jeux d’instructions manuels. Pour ce type de langage, opérations élémentaires : manipuler la memoire, calculs, comparaisons etc.
+Pourquoi utiliser l’assembleur ?
+Utiliser ce langage pour pouvoir faire de l’optimisation de certains programmes. Peu être intégré dans un programme en C par exemple. 
+Le strict minimum qu’on peut utiliser avec tous les processeur, certaines architectures peuvent ne pas prendre en charge d’autres langages. 
+https://www.lacl.fr/tan/asm
+Le processeur
+Le processeur lit et écrit des informations en mémoire. Il peut de plus effectuer des opérations arithmétiques et logiques. Chaque action qu’il peut effectuer est appelée instruction. Les instructions effectuées par le processeur sont stockées dans la mémoire. Il dispose d’un petit nombre d’emplacements mémoire d’accès plus rapide, les registres. Un registre spécial nommé eip (extended instruction pointer)contient à tout moment l’adresse de la prochaine instruction à exécuter. De façon répétée le processeur :
+- lit l’instruction stockée à l’adresse contenue dans l’eip.
+- l’interprète ce qui peut modifier certains registres (dont l’eip) et la mémoire.
+	
+Deux types de syntaxes :
+- Intel
+- AT&T
+
+Structure d’un code en syntaxe intel a l’aide de l’assembleur asm. 
+
+Macro :
+	%define HELLO ‘hello world’
+	%include ‘autre_fichier.s’
+Les directives :
+	extern :  permet de récupérer des symboles/fonctions extérieurs, dans l’api linux ou d’un autre programme.
+	global :  exporter une etiquette pour être utilise a l’éxterieur
+	section/segment : groupe de block qui permet de distinguer ..?
+
+<Etiquette > : (correspond a une adresse dans laquelle est stoke l’instruction)
+	<Instruction> <opérande(s)>  / <OPERATION> <DESTINATION, SOURCE> 
+	Opérande =  un registre, une adresse mémoire, une constante ou valeur immédiate, une expression limitée à certains opérateurs (2*4).
+	Par ex : mov eax, [ ebx + ecx*2 + 0x80848c48 ]
+On affecte a eax la valeur contenue a l’adresse  ebx + ecx*2 + 0x80848c48
+
+[Les registres] Elements de stockage, composant du processeur qui stock des data et adresses. Espace memoire interne au processeur qui évite de devoir aller stocker et chercher dans la memoire. On y met la valeur que l’on veut comme une variable.
+	•	First Argument: RDI 
+	•	Second Argument: RSI 
+	•	Third Argument: RDX 
+	•	Fourth Argument: RCX 
+	•	Fifth Argument: R8 
+	•	Sixth Argument: R9 	
+	•	The return register: RAX
+
+64-bit register | Lower 32 bits | Lower 16 bits | Lower 8 bits
+==============================================================
+rax             | eax           | ax            | al
+rbx             | ebx           | bx            | bl
+rcx             | ecx           | cx            | cl
+rdx             | edx           | dx            | dl
+rsi             | esi           | si            | sil
+rdi             | edi           | di            | dil
+rbp             | ebp           | bp            | bpl
+rsp             | esp           | sp            | spl
+r8              | r8d           | r8w           | r8b
+r9              | r9d           | r9w           | r9b
+r10             | r10d          | r10w          | r10b
+r11             | r11d          | r11w          | r11b
+r12             | r12d          | r12w          | r12b
+r13             | r13d          | r13w          | r13b
+r14             | r14d          | r14w          | r14b
+r15             | r15d          | r15w          | r15b
+Deux types de registres : “scratch” qui permet de réutiliser un registre et en faire ce qu’on veut et les registres “preserved” qui ont une utilité propre.
+https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html
+
+	Section .data Permet de déclarer des variables initialisées, des constantes  (int a = 1;) DATA SEGMENT 
+	Utilise pour declarer les emplacements mémoire pour le programme.						
+			<etiquette> 
+			<pseudo-instruction> <valeur-initiale>
+			db = define byte = déclare un octet
+			dw = define word = déclare deux octets
+			dd = define doubleword = déclare quatre octets
+			dq = define quadword = déclare huit octets
+			dt = define tenbytes = déclare dix octet
+	ex : hello db “hello world” / HELLO
+		hello_len equ $-hello
+
+	Section .bss  Permet de définir des variables non initialises ( ex int a; ) DATA SEGMENT 
+	Une section de memoire statique qui contient des buffers(rempli de 0) pour les données qui seront declare plus tard dans le programme.
+			<etiquette> 
+			<pseudo-instruction> <nb>
+			resb = reserve byte = déclare un octet
+			resw = reserve word = déclare deux octets
+			resd = reserve doubleword = déclare quatre octets
+			resq = reserve quadword = déclare huit octets
+			rest = reserve tenbytes = déclare dix octets
+	ex : a resb 256 (octets = 1 char)
+
+	Section .text Permet d’exécuter le programme, contient les instructions pour ca (printf(“%d”, a);) CODE SEGMENT
+	On envoie les arguments dont une fonction sys call a besoin, un par un.  https://syscalls.w3challs.com/?arch=x86_64
+		global <etiquette> which tells the kernel where the program execution begins
+		<etiquette:>  nom_instruction <opérande>
+	ex : Appel système write
+		mov rax, 1
+		mov rdi, 1
+		mov rsi, hello
+		mov rdx, hello_len
+		syscall
+
+Acces a la memoire avec l’operateur [ ]
+[cette_Adresse] represente la valeur stockee a l’adresse cette_Adresse.
+[ce_Registre] represente la valeur stockee a l’adresse contenue dans le registre ce_Registre.
+On peut associer une etiquette cette_Etiquette a une adresse memoire et utiliser [cette_Etiquette].
+
+extern read_input 
+call read_input   -> Permet d’appeler one fonction externe
+ret
+
+Compiler sous linux :
+Peut se faire au format ELF (”Executable and Linkable Format”) + éditeur de liens ld
+nasm -f elf monProgramme.asm (-g debug)
+clang monProgramme.o (-o monExecutable) main.c
+
+Push and pop
+Push :
+	permet de preserver(sauver) une valeur en l’envoyant sur la stack
+Pop :
+	permet de restaurer la valeur récupérer depuis la slack
+
+https://stackoverflow.com/questions/4584089/what-is-the-function-of-the-push-pop-instructions-used-on-registers-in-x86-ass
+
+LOOP : https://www.tutorialspoint.com/assembly_programming/assembly_loops.htm
+
+; swap contents of registers
+push rax
+mov rax, rbx
+pop rbx
