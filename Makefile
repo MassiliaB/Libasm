@@ -26,15 +26,19 @@ RM = rm -f
 
 LIB = ar -rc ${NAME}
 
-.o.c = $(CC) ${CFLAGS} -c $< -o ${$<.c=.o}
+%.o: %.s
+	${NASM} $<
 
 all: ${NAME}
 
 $(NAME): ${OBJS}
 	${LIB} ${OBJS}
 
+tester:	${NAME}
+		${CC} ${CFLAGS} ${OBJS} main.c
+
 clean:
-	${RM} ${OBJS}
+	${RM} ${OBJS} a.out
 
 fclean: clean
 	${RM} ${NAME}
