@@ -7,20 +7,17 @@ ft_strcmp :
     push rcx
     mov rcx, 0
 
-_while :
-    cmp byte [rdi + rcx], 0
-    je _return
-    cmp byte [rsi + rcx], 0
-    je _return
-    mov dl, byte [rdi + rcx]
-    cmp byte [rsi + rcx], dl
-    je _return
-    inc rcx
-    jmp _while;
+    _while :
+        mov dl, byte [rdi + rcx] ; c = s1[i]
+        cmp dl, 0                ; if c == '\0'
+        je _return
+        cmp dl, byte [rsi + rcx] ; if s1[i] != s2[i]
+        jne _return
+        inc rcx
+        jmp _while;
 
 _return :
-    mov byte r8b, byte [rsi + rcx]
-    sub byte [rdi + rcx], byte r8b
-    mov rax, [rdi + rcx]
+    sub dl, byte [rsi + rcx]    ; c - s2[i]
+    movzx rax, dl
     pop rcx
     ret

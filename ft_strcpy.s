@@ -8,9 +8,9 @@ ft_strcpy :
     mov rcx, 0
 
 _while :
-    cmp byte [rsi + rcx], 0
     mov dl, byte [rsi + rcx]
     mov byte [rdi + rcx], dl
+    cmp byte [rsi + rcx], 0
     je _return
     inc rcx
     jmp _while;
