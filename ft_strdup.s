@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ft_strdup.s                                        :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: masboula <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2021/03/25 14:51:34 by masboula          #+#    #+#              #
+#    Updated: 2021/03/25 14:53:03 by masboula         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 bits 64
 
 extern ft_strlen
@@ -10,10 +22,10 @@ section .text
 ft_strdup :
     _malloc :
         push rdi
-        call ft_strlen wrt ..plt     ; from rdi
+        call ft_strlen wrt ..plt
         inc rax
-        mov rdi, rax                ; put the return value in rdi
-        call malloc wrt ..plt        ; give the number of bytes to allocate, now rax point to the allocated memory
+        mov rdi, rax
+        call malloc wrt ..plt
     _copy :
         pop rdi
         mov rsi, rdi
